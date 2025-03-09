@@ -2,13 +2,13 @@
 
 ## **1️⃣ User Registration**
 
-### **Endpoint: `/user/register`**
+### **Endpoint: `/users/register`**
 
 #### **Description**
 This endpoint allows users to register by providing their name, email, and password. The password is securely hashed before storing it in the database, and a JWT token is generated upon successful registration.
 
 ### **Request Method**
-**POST** `/user/register`
+**POST** `/users/register`
 
 ### **Request Body (JSON Format)**
 | Field     | Type   | Required | Validation |
@@ -51,13 +51,13 @@ This endpoint allows users to register by providing their name, email, and passw
 
 ## **2️⃣ User Login**
 
-### **Endpoint: `/user/login`**
+### **Endpoint: `/users/login`**
 
 #### **Description**
 This endpoint allows users to log in using their email and password. If the credentials are valid, the server responds with a JWT token.
 
 ### **Request Method**
-**POST** `/user/login`
+**POST** `/users/login`
 
 ### **Request Body (JSON Format)**
 | Field     | Type   | Required | Validation |
@@ -95,15 +95,92 @@ This endpoint allows users to log in using their email and password. If the cred
 
 ---
 
+## **3️⃣ User Profile**
+
+### **Endpoint: `/users/profile`**
+
+#### **Description**
+This endpoint allows authenticated users to retrieve their profile details.
+
+### **Request Method**
+**GET** `/users/profile`
+
+### **Headers**
+| Header | Type   | Required | Description |
+|--------|--------|----------|-------------|
+| `Authorization` | String | ✅ Yes  | Bearer token obtained during login |
+
+### **Example Request**
+```sh
+GET /users/profile
+Authorization: Bearer <JWT_TOKEN>
+```
+
+### **Response**
+#### **Success Response (200 OK)**
+```json
+{
+  "_id": "65fd1234abcde56789f0",
+  "name": "John Doe",
+  "email": "johndoe@example.com"
+}
+```
+
+#### **Error Responses**
+| Status Code | Error Message |
+|------------|--------------|
+| 401 Unauthorized | "Unauthorized: No token provided" |
+| 403 Forbidden | "Invalid or expired token" |
+
+---
+
+## **4️⃣ User Logout**
+
+### **Endpoint: `/users/logout`**
+
+#### **Description**
+This endpoint allows users to log out by clearing the authentication token and adding it to a blacklist.
+
+### **Request Method**
+**GET** `/users/logout`
+
+### **Headers**
+| Header | Type   | Required | Description |
+|--------|--------|----------|-------------|
+| `Authorization` | String | ✅ Yes  | Bearer token obtained during login |
+
+### **Example Request**
+```sh
+GET /users/logout
+Authorization: Bearer <JWT_TOKEN>
+```
+
+### **Response**
+#### **Success Response (200 OK)**
+```json
+{
+  "message": "Logged out"
+}
+```
+
+#### **Error Responses**
+| Status Code | Error Message |
+|------------|--------------|
+| 401 Unauthorized | "Unauthorized: No token provided" |
+| 403 Forbidden | "Invalid or expired token" |
+
+---
+
 ## **Validation & Security Features**
 - **Validation**: `express-validator` ensures input meets the required format.
 - **Password Hashing**: Uses `bcrypt` to securely hash passwords before storing.
 - **JWT Authentication**: Generates a token for the user to use in future authenticated requests.
+- **Token Blacklisting**: Logout implementation ensures tokens cannot be reused after logout.
 
 ---
 
 ## **Implementation Details**
-- **Routes File**: `user.routes.js` handles the `/register` and `/login` routes.
+- **Routes File**: `user.routes.js` handles the `/register`, `/login`, `/profile`, and `/logout` routes.
 - **Controller**: `user.controller.js` processes the request, validates input, and calls the service.
 - **Service Layer**: `user.service.js` handles database interactions.
 - **Model**: `user.model.js` defines the user schema, password hashing, and token generation.
@@ -112,8 +189,9 @@ This endpoint allows users to log in using their email and password. If the cred
 
 ## **How to Use**
 1. **Start the Server**: Ensure your backend is running.
-2. **Send a POST Request**: Use Postman, cURL, or frontend code to send data to `/user/register` or `/user/login`.
+2. **Send Requests**: Use Postman, cURL, or frontend code to interact with `/users/register`, `/users/login`, `/users/profile`, and `/users/logout`.
 3. **Receive Token**: If successful, the response includes a JWT token for authentication.
+4. **Use Token for Protected Routes**: Include the token in the `Authorization` header for accessing `/users/profile` and `/users/logout`.
 
 ---
 
